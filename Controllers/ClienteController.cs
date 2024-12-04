@@ -9,6 +9,9 @@ namespace ProjetoVendasAPI.Controllers;
 
 public class ClienteController : ControllerBase
 {
+    [HttpPost]
+    
+    
     //          *METODO GET ALL
     [HttpGet("v1/cliente")]
     public async Task<IActionResult> GetCliente([FromServices]VendasDataContext context)
@@ -83,6 +86,7 @@ public class ClienteController : ControllerBase
         }
     }
 
+    //          *METODO PUT
     [HttpPut("v1/cliente/{id:int}")]
     public async Task<IActionResult> Put([FromRoute] int id,
         [FromBody] EditorClienteViewModel clienteViewModel,
@@ -121,6 +125,7 @@ public class ClienteController : ControllerBase
         }
     }
 
+    //          *METODO DELETE
     [HttpDelete("v1/cliente/{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id, [FromServices] VendasDataContext context)
     {

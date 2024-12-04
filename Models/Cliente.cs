@@ -10,6 +10,8 @@ public class Cliente
     public string Senha { get; set; }
     public string Endereco { get; set; }
 
+    public List<Cargo> Cargos { get; set; }
+    
     public int CarrinhoId { get; set; }
     public Carrinho Carrinho { get; set; }
 

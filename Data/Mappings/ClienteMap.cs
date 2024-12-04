@@ -58,5 +58,23 @@ public class ClienteMap : IEntityTypeConfiguration<Cliente>
             .HasForeignKey(x => x.ClienteId)
             .HasConstraintName("FK_VendaFinal_Cliente")
             .OnDelete(DeleteBehavior.NoAction);
+        
+        builder
+            .HasMany(x => x.Cargos)
+            .WithMany(x => x.Clientes)
+            .UsingEntity<Dictionary<string, object>>(
+                "ClienteCargo",
+                cargo => cargo
+                    .HasOne<Cargo>()
+                    .WithMany()
+                    .HasForeignKey("CargoId")
+                    .HasConstraintName("FK_ClienteCargo_CargoId")
+                    .OnDelete(DeleteBehavior.Cascade),
+                cliente => cliente
+                    .HasOne<Cliente>()
+                    .WithMany()
+                    .HasForeignKey("ClienteId")
+                    .HasConstraintName("FK_ClienteCargo_ClienteId")
+                    .OnDelete(DeleteBehavior.Cascade));
     }
 }
