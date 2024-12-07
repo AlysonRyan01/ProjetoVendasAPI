@@ -4,13 +4,17 @@ namespace ProjetoVendasAPI.Extensions;
 
 public static class CargoClaimsExtensions
 {
-    public static IEnumerable<Claim> GetClaims(this Cliente cliente)
+    public static IEnumerable<Claim> Claims(this Cliente cliente)
     {
-        var result = new List<Claim>
+        var ClaimsList = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, cliente.Email)
+            new Claim(ClaimTypes.Name, cliente.Email),
         };
-        result.AddRange(cliente.Cargos.Select(cargo => new Claim(ClaimTypes.Role, cargo.Slug)));
-        return result;
+        foreach (var claims in cliente.Cargos)
+        {
+            ClaimsList.Add(new Claim(ClaimTypes.Role, claims.Slug));
+        }
+        
+        return ClaimsList;
     }
 }
