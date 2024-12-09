@@ -9,9 +9,6 @@ namespace ProjetoVendasAPI.Controllers;
 
 public class ClienteController : ControllerBase
 {
-    [HttpPost]
-    
-    
     //          *METODO GET ALL
     [HttpGet("v1/cliente")]
     public async Task<IActionResult> GetCliente([FromServices]VendasDataContext context)

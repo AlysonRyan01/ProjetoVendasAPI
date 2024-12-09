@@ -28,7 +28,7 @@ builder.Services
     .AddControllers()
     .ConfigureApiBehaviorOptions(options =>
     {
-        options.SuppressModelStateInvalidFilter = true; // * DESABILITA O RESULTADO DA VALIDACAO PADRAO DO MODELSTATE *
+        options.SuppressModelStateInvalidFilter = true;
     });
 
 builder.Services.AddDbContext<VendasDataContext>();

@@ -302,3 +302,5 @@ C:/Users/alyso/OneDrive/Documentos/CSharpProjects/ProjetoVendasAPI/obj/Debug/net
 /Users/alysonryanullirsch/Documents/ProjetosCsharp/ProjetoVendasAPI/obj/Debug/net9.0/ProjetoVendasAPI.pdb
 /Users/alysonryanullirsch/Documents/ProjetosCsharp/ProjetoVendasAPI/obj/Debug/net9.0/ProjetoVendasAPI.genruntimeconfig.cache
 /Users/alysonryanullirsch/Documents/ProjetosCsharp/ProjetoVendasAPI/obj/Debug/net9.0/ref/ProjetoVendasAPI.dll
+/Users/alysonryanullirsch/Documents/ProjetosCsharp/ProjetoVendasAPI/bin/Debug/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/alysonryanullirsch/Documents/ProjetosCsharp/ProjetoVendasAPI/bin/Debug/net9.0/SecureIdentity.dll

@@ -13,6 +13,7 @@ public class VendasDataContext : DbContext
     public DbSet<Produto> Produtos { get; set; }
     public DbSet<RelatorioVendas> RelatoriosVendas { get; set; }
     public DbSet<VendaFinal> VendasFinais { get; set; }
+    public DbSet<Cargo> Cargos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -28,5 +29,6 @@ public class VendasDataContext : DbContext
         modelBuilder.ApplyConfiguration(new ProdutoMap());
         modelBuilder.ApplyConfiguration(new RelatorioVendasMap());
         modelBuilder.ApplyConfiguration(new VendaFinalMap());
+        modelBuilder.ApplyConfiguration(new CargoMap());
     }
 }

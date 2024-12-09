@@ -26,8 +26,6 @@ public class CreateClienteViewModel
     
     [Required(ErrorMessage = "O campo Senha é obrigatório.")]
     [StringLength(15, MinimumLength = 8, ErrorMessage = "A Senha deve ter entre 8 e 15 caracteres.")]
-    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", 
-        ErrorMessage = "A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial.")]
     public string Senha { get; set; }
     
     [Required(ErrorMessage = "O campo Endereço é obrigatório.")]
