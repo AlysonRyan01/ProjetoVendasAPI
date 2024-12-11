@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProjetoVendasAPI.Attributes;
+using ProjetoVendasAPI.ViewModels;
 
 namespace ProjetoVendasAPI.Controllers;
 
@@ -8,6 +10,6 @@ public class HomeController : ControllerBase
     [HttpGet("/")]
     public IActionResult Get()
     {
-        return Ok(new { message = "Site is running!"});                                  
+        return Ok(new ResultViewModel<string>("Site rodando."));
     }
 }
