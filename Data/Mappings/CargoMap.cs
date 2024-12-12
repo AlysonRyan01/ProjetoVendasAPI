@@ -18,11 +18,13 @@ namespace ProjetoVendasAPI.Data.Mappings
 
             builder.Property(x => x.Name)
                 .HasColumnName("Name")
-                .HasColumnType("NVARCHAR");
+                .HasColumnType("NVARCHAR")
+                .HasMaxLength(50);
 
             builder.Property(x => x.Slug)
                 .HasColumnName("Slug")
-                .HasColumnType("NVARCHAR");
+                .HasColumnType("NVARCHAR")
+                .HasMaxLength(50);
         }
     }
 }

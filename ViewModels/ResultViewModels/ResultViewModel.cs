@@ -1,4 +1,4 @@
-﻿namespace ProjetoVendasAPI.ViewModels;
+﻿namespace ProjetoVendasAPI.ViewModels.ResultViewModels;
 
 public class ResultViewModel <T>
 {

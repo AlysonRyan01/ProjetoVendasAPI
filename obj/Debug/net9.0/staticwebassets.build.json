@@ -1,12 +1,20 @@
 {
   "Version": 1,
-  "Hash": "Jz+7JWf+mHz67Uf9eG5lAJLaAyJo+mQ/MVCKXwkLlao=",
+  "Hash": "A7TqHsHzemiIN+N9wjvZParz7KmLstaKpejdhTKvw7U=",
   "Source": "ProjetoVendasAPI",
   "BasePath": "_content/ProjetoVendasAPI",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "ProjetoVendasAPI\\wwwroot",
+      "Source": "ProjetoVendasAPI",
+      "ContentRoot": "D:\\GitHubRepository\\ProjetoVendasAPI\\wwwroot\\",
+      "BasePath": "_content/ProjetoVendasAPI",
+      "Pattern": "**"
+    }
+  ],
   "Assets": [],
   "Endpoints": []
 }

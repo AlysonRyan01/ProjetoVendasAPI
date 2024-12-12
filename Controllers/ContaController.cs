@@ -1,14 +1,13 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using ProjetoVendasAPI.Data;
 using ProjetoVendasAPI.Extensions;
 using ProjetoVendasAPI.Models;
 using ProjetoVendasAPI.Services;
-using ProjetoVendasAPI.ViewModels;
 using ProjetoVendasAPI.ViewModels.Contas;
+using ProjetoVendasAPI.ViewModels.ResultViewModels;
 using SecureIdentity.Password;
 
 namespace ProjetoVendasAPI.Controllers;
@@ -25,8 +24,8 @@ public class ContaController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
 
-        var cargoAdmin = await context.Cargos.FirstOrDefaultAsync(x => x.Id == 1);
-        var cargoCliente = await context.Cargos.FirstOrDefaultAsync(x => x.Id == 2);
+        var cargoAdmin = await context.Cargos.FirstOrDefaultAsync(x => x.Id == 2);
+        var cargoCliente = await context.Cargos.FirstOrDefaultAsync(x => x.Id == 1);
         
         var cliente = new Cliente();
         cliente.Nome = model.Nome;
@@ -51,11 +50,11 @@ public class ContaController : ControllerBase
         }
         catch (DbUpdateException e)
         {
-            return StatusCode(400, new ResultViewModel<string>("05x003 - Erro no banco de dados."));
+            return StatusCode(400, new ResultViewModel<string>("005x200 - Erro no servidor"));
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return StatusCode(500, new ResultViewModel<string>("0x0A002 - Erro no servidor."));
+            return StatusCode(500, new ResultViewModel<string>("005x500 - Erro no servidor"));
         }
     }
 

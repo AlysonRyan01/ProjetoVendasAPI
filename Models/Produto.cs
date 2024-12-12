@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace ProjetoVendasAPI.Models;
 
 public class Produto
@@ -11,7 +13,10 @@ public class Produto
     public decimal Preco { get; set; }
     public string Garantia { get; set; }
 
+    [JsonIgnore]
     public int? CarrinhoId { get; set; }
+    
+    [JsonIgnore]
     public Carrinho? Carrinho { get; set; }
 
     public IList<ProdutoImagens> ProdutoImagens { get; set; }

@@ -306,6 +306,7 @@ C:/Users/alyso/OneDrive/Documentos/CSharpProjects/ProjetoVendasAPI/obj/Debug/net
 /Users/alysonryanullirsch/Documents/ProjetosCsharp/ProjetoVendasAPI/bin/Debug/net9.0/SecureIdentity.dll
 D:\GitHubRepository\ProjetoVendasAPI\bin\Debug\net9.0\appsettings.Development.json
 D:\GitHubRepository\ProjetoVendasAPI\bin\Debug\net9.0\appsettings.json
+D:\GitHubRepository\ProjetoVendasAPI\bin\Debug\net9.0\ProjetoVendasAPI.staticwebassets.runtime.json
 D:\GitHubRepository\ProjetoVendasAPI\bin\Debug\net9.0\ProjetoVendasAPI.staticwebassets.endpoints.json
 D:\GitHubRepository\ProjetoVendasAPI\bin\Debug\net9.0\ProjetoVendasAPI.exe
 D:\GitHubRepository\ProjetoVendasAPI\bin\Debug\net9.0\ProjetoVendasAPI.deps.json

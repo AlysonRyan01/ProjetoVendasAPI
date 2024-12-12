@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjetoVendasAPI.Attributes;
 using ProjetoVendasAPI.ViewModels;
+using ProjetoVendasAPI.ViewModels.ResultViewModels;
 
 namespace ProjetoVendasAPI.Controllers;
 

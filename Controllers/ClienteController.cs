@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjetoVendasAPI.Data;
-using ProjetoVendasAPI.Extensions;
-using ProjetoVendasAPI.ViewModels;
 using ProjetoVendasAPI.Models;
-using ProjetoVendasAPI.ViewModels.Contas;
+using ProjetoVendasAPI.ViewModels.ResultViewModels;
 
 namespace ProjetoVendasAPI.Controllers;
 
 public class ClienteController : ControllerBase
 {
-    //          *METODO GET ALL
+    [Authorize(Roles = "admin")]
     [HttpGet("v1/cliente")]
     public async Task<IActionResult> GetCliente([FromServices]VendasDataContext context)
     {
@@ -29,7 +28,7 @@ public class ClienteController : ControllerBase
         }
     }
     
-    //          *METODO GET BY ID
+    [Authorize(Roles = "admin")]
     [HttpGet("v1/cliente/{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id, [FromServices] VendasDataContext context)
     {
@@ -47,83 +46,8 @@ public class ClienteController : ControllerBase
             return StatusCode(500, new ResultViewModel<Carrinho>("05x9 - Falha interna no servidor"));
         }
     }
-
-    [HttpPost("v1/cliente")]
-    public async Task<IActionResult> PostCarrinho([FromBody] CreateClienteViewModel clienteModel,
-                                                [FromServices] VendasDataContext context)
-    {   
-        if(!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<Cliente>(ModelState.GetErrors()));
-
-        try
-        {
-            var cliente = new Cliente
-            {
-                Id = 0,
-                Nome = clienteModel.Nome,
-                Cpf = clienteModel.Cpf,
-                Fone = clienteModel.Fone,
-                Email = clienteModel.Email,
-                Senha = clienteModel.Senha,
-                Endereco = clienteModel.Endereco,
-                Carrinho = new Carrinho()
-            };
-
-            await context.Clientes.AddAsync(cliente);
-            await context.SaveChangesAsync();
-
-            return Created($"v1/cliente/{cliente.Id}", new ResultViewModel<Cliente>(cliente));
-        }
-        catch (DbUpdateException e)
-        {
-            return StatusCode(500, new ResultViewModel<Cliente>("05x10 - Nao foi possivel incluir o cliente."));
-        }
-        catch
-        {
-            return StatusCode(500, new ResultViewModel<Cliente>("05x9 - Falha interna no servidor"));
-        }
-    }
-
-    //          *METODO PUT
-    [HttpPut("v1/cliente/{id:int}")]
-    public async Task<IActionResult> Put([FromRoute] int id,
-        [FromBody] EditorClienteViewModel clienteViewModel,
-        [FromServices] VendasDataContext context)
-    {
-        if(!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<Cliente>(ModelState.GetErrors()));
-
-        try
-        {
-            var cliente = await context.Clientes.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (cliente == null)
-                return NotFound(new ResultViewModel<Cliente>("Cliente nao cadastrado!"));
-
-            cliente.Nome = clienteViewModel.Nome;
-            cliente.Cpf = clienteViewModel.Cpf;
-            cliente.Fone = clienteViewModel.Fone;
-            cliente.Email = clienteViewModel.Email;
-            cliente.Senha = clienteViewModel.Senha;
-            cliente.Endereco = clienteViewModel.Endereco;
-            cliente.Carrinho = new Carrinho();
-
-            context.Clientes.Update(cliente);
-            await context.SaveChangesAsync();
-
-            return Ok(new ResultViewModel<Cliente>(cliente));
-        }
-        catch (DbUpdateException e)
-        {
-            return StatusCode(500, new ResultViewModel<Cliente>("05x11 - Nao foi possivel atualizar o cliente."));
-        }
-        catch
-        {
-            return StatusCode(500, new ResultViewModel<Cliente>("05x12 - Falha interna no servidor"));
-        }
-    }
-
-    //          *METODO DELETE
+    
+    [Authorize(Roles = "admin")]
     [HttpDelete("v1/cliente/{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id, [FromServices] VendasDataContext context)
     {
@@ -147,5 +71,39 @@ public class ClienteController : ControllerBase
         {
             return StatusCode(500, new ResultViewModel<Cliente>("05x13 - Falha interna no servidor."));
         }
+    }
+
+    [Authorize]
+    [HttpGet("v1/cliente/Carrinho")]
+    public async Task<IActionResult> Carrinho([FromServices] VendasDataContext context)
+    {
+        try
+        {
+            var cliente = await context
+                .Clientes
+                .Include(x => x.Carrinho)
+                    .ThenInclude(x => x.Produtos)
+                .FirstOrDefaultAsync(x => x.Email == User.Identity.Name);
+
+            if (cliente == null)
+                return NotFound(new ResultViewModel<string>("Cliente nao encontrado!"));
+
+            var carrinho = cliente.Carrinho;
+            var produtosCarrinho = new List<Produto>();
+            decimal valorTotalCarrinho = 0.0m;
+
+            foreach (var produtos in carrinho.Produtos)
+            {
+                produtosCarrinho.Add(produtos);
+                valorTotalCarrinho += produtos.Preco;
+            }
+            
+            return Ok(new ResultCarrinhoViewModel<List<Produto>>(produtosCarrinho, valorTotalCarrinho));
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, new ResultViewModel<string>(e.Message));
+        }
+        
     }
 }

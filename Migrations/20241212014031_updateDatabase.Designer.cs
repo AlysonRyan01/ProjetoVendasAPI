@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjetoVendasAPI.Data;
 
@@ -10,9 +11,11 @@ using ProjetoVendasAPI.Data;
 namespace ProjetoVendasAPI.Migrations
 {
     [DbContext(typeof(VendasDataContext))]
-    partial class VendasDataContextModelSnapshot : ModelSnapshot
+    [Migration("20241212014031_updateDatabase")]
+    partial class updateDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,13 +49,11 @@ namespace ProjetoVendasAPI.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("NVARCHAR")
                         .HasColumnName("Name");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("NVARCHAR")
                         .HasColumnName("Slug");
 
