@@ -27,6 +27,12 @@ public class ClienteMap : IEntityTypeConfiguration<Cliente>
             .HasColumnName("Nome")
             .HasColumnType("NVARCHAR")
             .HasMaxLength(120);
+        
+        builder.Property(x=> x.Imagem)
+            .IsRequired(false)
+            .HasColumnName("Imagem")
+            .HasColumnType("NVARCHAR")
+            .HasMaxLength(300);
 
         builder.Property(x=> x.Fone)
             .IsRequired()

@@ -4,6 +4,7 @@ using ProjetoVendasAPI.Data;
 using ProjetoVendasAPI.Extensions;
 using ProjetoVendasAPI.ViewModels;
 using ProjetoVendasAPI.Models;
+using ProjetoVendasAPI.ViewModels.Contas;
 
 namespace ProjetoVendasAPI.Controllers;
 

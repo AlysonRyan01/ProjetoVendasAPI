@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +8,7 @@ using ProjetoVendasAPI.Extensions;
 using ProjetoVendasAPI.Models;
 using ProjetoVendasAPI.Services;
 using ProjetoVendasAPI.ViewModels;
+using ProjetoVendasAPI.ViewModels.Contas;
 using SecureIdentity.Password;
 
 namespace ProjetoVendasAPI.Controllers;
@@ -13,9 +16,11 @@ namespace ProjetoVendasAPI.Controllers;
 [ApiController]
 public class ContaController : ControllerBase
 {
-    [HttpPost("v1/cadastro")]
+    [AllowAnonymous]
+    [HttpPost("v1/conta/cadastro")]
     public async Task<IActionResult> Register([FromBody] CreateClienteViewModel model,
-        [FromServices] VendasDataContext context)
+        [FromServices] VendasDataContext context,
+        [FromServices] EmailService email)
     {
         if (!ModelState.IsValid)
             return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
@@ -40,10 +45,9 @@ public class ContaController : ControllerBase
             await context.Clientes.AddAsync(cliente);
             await context.SaveChangesAsync();
             
-            return Ok(new ResultViewModel<dynamic>(new
-            {
-                cliente = cliente.Email, senha
-            }));
+            email.Send(model.Nome, model.Email, $"Bem vindo ao nosso site {model.Nome}!", "");
+            
+            return Ok(new ResultViewModel<string>("Conta cadastrada com sucesso!", null));
         }
         catch (DbUpdateException e)
         {
@@ -55,7 +59,8 @@ public class ContaController : ControllerBase
         }
     }
 
-    [HttpGet("v1/login")]
+    [AllowAnonymous]
+    [HttpGet("v1/conta/logar")]
     public async Task<IActionResult> Login([FromBody] LoginClienteViewModel model,
         [FromServices] VendasDataContext context,
         [FromServices] TokenService tokenService)
@@ -84,5 +89,44 @@ public class ContaController : ControllerBase
         {
             return StatusCode(500, new ResultViewModel<string>("0x0023 - Erro no servidor"));
         }
+    }
+
+    [Authorize]
+    [HttpPost("v1/conta/upload-image")]
+    public async Task<IActionResult> UploadImage(
+        [FromServices] VendasDataContext context,
+        [FromBody] UploadImageViewModel model)
+    {
+        var fileName = $"{Guid.NewGuid().ToString()}.jpg";
+        var data = new Regex(@"^data:image\/[a-z]+;base64,").Replace(model.Base64Image, "");
+        var bytes = Convert.FromBase64String(data);
+
+        try
+        {
+            await System.IO.File.WriteAllBytesAsync($"wwwroot/images/{fileName}", bytes);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, new ResultViewModel<string>("05x002 - Erro no servidor"));
+        }
+
+        var cliente = await context.Clientes.FirstOrDefaultAsync(x => x.Email == User.Identity.Name);
+
+        cliente.Imagem = $"https://localhost:0000/images/{fileName}";
+        
+        if (cliente == null)
+            return NotFound(new ResultViewModel<string>("Usuario nao encontrado."));
+
+        try
+        {
+            context.Clientes.Update(cliente);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, new ResultViewModel<string>("05x002 - Erro no servidor"));
+        }
+        
+        return Ok(new ResultViewModel<string>("Imagem atualizada com sucesso!", null));
     }
 }

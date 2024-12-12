@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ProjetoVendasAPI.ViewModels;
+namespace ProjetoVendasAPI.ViewModels.Contas;
 
 public class LoginClienteViewModel
 {
