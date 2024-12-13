@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using ProjetoVendasAPI.Data;
 using ProjetoVendasAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -52,11 +53,15 @@ void ConfigureAuthentication(WebApplicationBuilder builder)
 void ConfigureMvc(WebApplicationBuilder builder)
 {
     builder.Services
-    .AddControllers()
-    .ConfigureApiBehaviorOptions(options =>
-    {
-        options.SuppressModelStateInvalidFilter = true;
-    });
+        .AddControllers()
+        .ConfigureApiBehaviorOptions(options =>
+        {
+            options.SuppressModelStateInvalidFilter = true;
+        })
+        .AddJsonOptions(x =>
+        {
+            x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
 }
 
 void ConfigureServices(WebApplicationBuilder builder)

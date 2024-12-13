@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjetoVendasAPI.Data;
 using ProjetoVendasAPI.Models;
+using ProjetoVendasAPI.ViewModels.Contas;
+using ProjetoVendasAPI.ViewModels.Contas.UpdateClienteViewModel;
 using ProjetoVendasAPI.ViewModels.ResultViewModels;
+using SecureIdentity.Password;
 
 namespace ProjetoVendasAPI.Controllers;
 
@@ -11,7 +14,8 @@ public class ClienteController : ControllerBase
 {
     [Authorize(Roles = "admin")]
     [HttpGet("v1/cliente")]
-    public async Task<IActionResult> GetCliente([FromServices]VendasDataContext context)
+    public async Task<IActionResult> GetCliente(
+        [FromServices]VendasDataContext context)
     {
         try
         {
@@ -30,7 +34,9 @@ public class ClienteController : ControllerBase
     
     [Authorize(Roles = "admin")]
     [HttpGet("v1/cliente/{id:int}")]
-    public async Task<IActionResult> GetById([FromRoute] int id, [FromServices] VendasDataContext context)
+    public async Task<IActionResult> GetById(
+        [FromRoute] int id, 
+        [FromServices] VendasDataContext context)
     {
         try
         {
@@ -49,7 +55,9 @@ public class ClienteController : ControllerBase
     
     [Authorize(Roles = "admin")]
     [HttpDelete("v1/cliente/{id:int}")]
-    public async Task<IActionResult> Delete([FromRoute] int id, [FromServices] VendasDataContext context)
+    public async Task<IActionResult> Delete(
+        [FromRoute] int id, 
+        [FromServices] VendasDataContext context)
     {
         try
         {
@@ -74,13 +82,48 @@ public class ClienteController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("v1/cliente/Carrinho")]
-    public async Task<IActionResult> Carrinho([FromServices] VendasDataContext context)
+    [HttpGet("v1/cliente/meu-perfil")]
+    public async Task<IActionResult> GetPerfil(
+        [FromServices] VendasDataContext context)
     {
         try
         {
             var cliente = await context
                 .Clientes
+                .AsNoTracking()
+                .Select(x => new ClientePerfilViewModel
+                {
+                    Imagem = x.Imagem,
+                    Nome = x.Nome,
+                    Cpf = x.Cpf,
+                    Fone = x.Fone,
+                    Email = x.Email,
+                    Endereco = x.Endereco
+                })
+                .FirstOrDefaultAsync(x => x.Email == User.Identity.Name);
+            
+            if (cliente == null)
+                return NotFound(new ResultViewModel<Cliente>("Cliente nao encontrado!"));
+            
+            return Ok(new ResultViewModel<ClientePerfilViewModel>(cliente, null));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    [Authorize]
+    [HttpGet("v1/cliente/carrinho")]
+    public async Task<IActionResult> Carrinho(
+        [FromServices] VendasDataContext context)
+    {
+        try
+        {
+            var cliente = await context
+                .Clientes
+                .AsNoTracking()
                 .Include(x => x.Carrinho)
                     .ThenInclude(x => x.Produtos)
                 .FirstOrDefaultAsync(x => x.Email == User.Identity.Name);
@@ -89,7 +132,9 @@ public class ClienteController : ControllerBase
                 return NotFound(new ResultViewModel<string>("Cliente nao encontrado!"));
 
             var carrinho = cliente.Carrinho;
+            
             var produtosCarrinho = new List<Produto>();
+            
             decimal valorTotalCarrinho = 0.0m;
 
             foreach (var produtos in carrinho.Produtos)
@@ -105,5 +150,66 @@ public class ClienteController : ControllerBase
             return StatusCode(500, new ResultViewModel<string>(e.Message));
         }
         
+    }
+
+    [Authorize]
+    [HttpPut("v1/cliente/meu-perfil/alterar-email")]
+    public async Task<IActionResult> AlterarEmail(
+        [FromServices] VendasDataContext context,
+        [FromServices] UpdateEmailViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<string>("Email nao e valido"));
+
+        try
+        {
+            var cliente = await context.Clientes.AsNoTracking().FirstOrDefaultAsync(x => x.Email == User.Identity.Name);
+            
+            if (cliente == null)
+                return NotFound(new ResultViewModel<string>("Cliente nao encontrado!"));
+            
+            cliente.Email = model.Email;
+            
+            context.Clientes.Update(cliente);
+            await context.SaveChangesAsync();
+            
+            return Ok(new ResultViewModel<string>("E-mail atualizado com sucesso!", null));
+        }
+        catch
+        {
+            return StatusCode(500, new ResultViewModel<string>("05X00323 - Falha interna no servidor"));
+        }
+    }
+    
+    [Authorize]
+    [HttpPut("v1/cliente/meu-perfil/alterar-senha")]
+    public async Task<IActionResult> AlterarSenha(
+        [FromServices] VendasDataContext context,
+        [FromServices] UpdateSenhaViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<string>("Senha nao e valida"));
+
+        try
+        {
+            var cliente = await context.Clientes.AsNoTracking().FirstOrDefaultAsync(x => x.Email == User.Identity.Name);
+            
+            if (cliente == null)
+                return NotFound(new ResultViewModel<string>("Cliente nao encontrado!"));
+            
+            if (!PasswordHasher.Verify(cliente.Senha, model.SenhaAtual))
+                return StatusCode(401, new ResultViewModel<string>("senha incorreta"));
+            
+            cliente.Senha = PasswordHasher.Hash(model.SenhaNova);
+            
+            context.Clientes.Update(cliente);
+            await context.SaveChangesAsync();
+            
+            return Ok(new ResultViewModel<string>("Senha atualizada com sucesso!", null));
+        }
+        catch
+        {
+            return StatusCode(500, new ResultViewModel<string>("05X00323 - Falha interna no servidor"));
+        }
     }
 }
