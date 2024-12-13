@@ -15,11 +15,18 @@ public class ClienteController : ControllerBase
     [Authorize(Roles = "admin")]
     [HttpGet("v1/cliente")]
     public async Task<IActionResult> GetCliente(
-        [FromServices]VendasDataContext context)
+        [FromServices]VendasDataContext context,
+        [FromQuery] int page = 0,
+        [FromQuery] int pageSize = 25)
     {
         try
         {
-            var clientes = await context.Clientes.ToListAsync();
+            var clientes = await context
+                .Clientes
+                .AsNoTracking()
+                .Skip(page * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
             
             if (clientes.Count == 0) 
                 return NotFound(new ResultViewModel<Carrinho>("Nenhum cliente foi encontrado!."));
@@ -209,7 +216,7 @@ public class ClienteController : ControllerBase
         }
         catch
         {
-            return StatusCode(500, new ResultViewModel<string>("05X00323 - Falha interna no servidor"));
+            return StatusCode(500, new ResultViewModel<Cliente>("05X00323 - Falha interna no servidor"));
         }
     }
 }
